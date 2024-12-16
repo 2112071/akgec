@@ -1,0 +1,444 @@
+index.html-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Register and List</title>
+  <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+</head>
+<body>
+  <div class="container">
+    <!-- Register Form Section -->
+    <div class="register-form">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <div class="input-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="input-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+    </div>
+
+    <!-- Registered User Info -->
+    <div id="userConfirmation" class="confirmation">
+      <h3>User Registered:</h3>
+      <p><strong>Name:</strong> <span id="userName"></span></p>
+      <p><strong>Email:</strong> <span id="userEmail"></span></p>
+    </div>
+
+    <!-- Employee List Section -->
+    <div class="employee-list">
+      <h2>Employee List</h2>
+      <div id="employeeGrid" class="grid"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Axios CDN -->
+  <script src="app.js"></script> <!-- Link to external JavaScript file -->
+</body>
+</html>
+
+style.css-
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .register-form {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .register-form h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .confirmation {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #e9f7ef;
+    border: 1px solid #bde4c3;
+    border-radius: 5px;
+    display: none; /* Hide confirmation until registration */
+  }
+  
+  .employee-list {
+    margin-top: 40px;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .employee-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .employee-card h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .employee-card p {
+    margin: 5px 0;
+  }
+
+  script.js-
+  document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('registerForm');
+    const userConfirmation = document.getElementById('userConfirmation');
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    const employeeGrid = document.getElementById('employeeGrid');
+  
+    // Register User and POST API Request
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+  
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+  
+      // Send POST request to register the user
+      try {
+        const response = await axios.post('https://jsonplaceholder.typicode.com/posts', {
+          name,
+          email
+        });
+  
+        // Display confirmation message
+        userName.textContent = response.data.name;
+        userEmail.textContent = response.data.email;
+        userConfirmation.style.display = 'block'; // Show user registration confirmation
+  
+        // Reset the form
+        registerForm.reset();
+      } catch (error) {
+        console.error('Error registering user:', error);
+      }
+    });
+  
+    // Get Employee List and GET API Request
+    const fetchEmployees = async () => {
+      try {
+        const response = await axios.get('https://jsonplaceholder.typicode.com/users');
+        const employees = response.data;
+  
+        // Display employees in grid
+        employeeGrid.innerHTML = '';
+        employees.forEach(employee => {
+          const employeeCard = document.createElement('div');
+          employeeCard.className = 'employee-card';
+          employeeCard.innerHTML = `
+            <h3>${employee.name}</h3>
+            <p><strong>Email:</strong> ${employee.email}</p>
+            <p><strong>Company:</strong> ${employee.company.name}</p>
+          `;
+          employeeGrid.appendChild(employeeCard);
+        });
+      } catch (error) {
+        console.error('Error fetching employee list:', error);
+      }
+    };
+  
+    // Fetch employee list when the page loads
+    fetchEmployees();
+  });
+
+app.js-
+document.addEventListener('DOMContentLoaded', () => {
+  const registerForm = document.getElementById('registerForm');
+  const userConfirmation = document.getElementById('userConfirmation');
+  const userName = document.getElementById('userName');
+  const userEmail = document.getElementById('userEmail');
+  const employeeGrid = document.getElementById('employeeGrid');
+
+  // Register User and POST API Request
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+
+    // Send POST request to register the user
+    try {
+      const response = await axios.post('https://jsonplaceholder.typicode.com/posts', {
+        name,
+        email
+      });
+
+      // Display confirmation message
+      userName.textContent = response.data.name;
+      userEmail.textContent = response.data.email;
+      userConfirmation.style.display = 'block'; // Show user registration confirmation
+
+      // Reset the form
+      registerForm.reset();
+    } catch (error) {
+      console.error('Error registering user:', error);
+    }
+  });
+
+  // Get Employee List and GET API Request
+  const fetchEmployees = async () => {
+    try {
+      const response = await axios.get('https://jsonplaceholder.typicode.com/users');
+      const employees = response.data;
+
+      // Display employees in grid
+      employeeGrid.innerHTML = '';
+      employees.forEach(employee => {
+        const employeeCard = document.createElement('div');
+        employeeCard.className = 'employee-card';
+        employeeCard.innerHTML = `
+          <h3>${employee.name}</h3>
+          <p><strong>Email:</strong> ${employee.email}</p>
+          <p><strong>Company:</strong> ${employee.company.name}</p>
+        `;
+        employeeGrid.appendChild(employeeCard);
+      });
+    } catch (error) {
+      console.error('Error fetching employee list:', error);
+    }
+  };
+
+  // Fetch employee list when the page loads
+  fetchEmployees();
+});
+
+app.js-
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './App.css';
+
+// Registration Form Component
+const RegisterForm = ({ onRegister }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (name && email) {
+      const user = { name, email };
+      await onRegister(user);
+      setName('');
+      setEmail('');
+    } else {
+      alert('Please fill in both fields!');
+    }
+  };
+
+  return (
+    <div id="registerSection">
+      <h2>Register</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Enter Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Enter Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  );
+};
+
+// Employee List Component
+const EmployeeList = ({ employees }) => {
+  return (
+    <div id="employeeSection">
+      <h2>Employee List</h2>
+      <div id="employeeGrid" className="grid">
+        {employees.map((employee) => (
+          <div key={employee.id} className="employee-card">
+            <h3>{employee.name}</h3>
+            <p><strong>Email:</strong> {employee.email}</p>
+            <p><strong>Company:</strong> {employee.company.name}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Main App Component
+const App = () => {
+  const [user, setUser] = useState(null);
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch Employee Data
+  const fetchEmployees = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('https://jsonplaceholder.typicode.com/users');
+      setEmployees(response.data);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Register User (POST Request)
+  const handleRegister = async (userData) => {
+    try {
+      const response = await axios.post('https://jsonplaceholder.typicode.com/posts', userData);
+      setUser({
+        name: response.data.name,
+        email: response.data.email
+      });
+    } catch (error) {
+      console.error('Error registering user:', error);
+    }
+  };
+
+  // Fetch employees when the app loads
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  return (
+    <div className="App">
+      <RegisterForm onRegister={handleRegister} />
+
+      {user && (
+        <div id="userConfirmation">
+          <h3>Welcome, {user.name}</h3>
+          <p>Your email: {user.email}</p>
+        </div>
+      )}
+
+      {loading ? (
+        <p>Loading employees...</p>
+      ) : (
+        <EmployeeList employees={employees} />
+      )}
+    </div>
+  );
+};
+
+export default App;
+
+// app.css-
+.App {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f7f6;
+    padding: 20px;
+  }
+  
+  #registerSection, #employeeSection {
+    margin-bottom: 40px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  form input {
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  form button {
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  form button:hover {
+    background-color: #0056b3;
+  }
+  
+  #employeeGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .employee-card {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .employee-card h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+  }
+  
+  .employee-card p {
+    margin: 5px 0;
+  }
+  
