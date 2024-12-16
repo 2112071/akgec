@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdbool.h>
+bool is_prime(int num) {
+    if (num <= 1) {
+        return false;
+    }
+    for (int i = 2; i * i <= num; i++) {
+        if (num % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+void sort_descending(int arr[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = i + 1; j < size; j++) {
+            if (arr[i] < arr[j]) {
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+}
+
+// Function to rearrange the array as per the problem
+void rearrange_array(int arr[], int size) {
+    int primes[size];
+    int non_primes[size];
+    int prime_count = 0, non_prime_count = 0;
+    for (int i = 0; i < size; i++) {
+        if (is_prime(arr[i])) {
+            primes[prime_count++] = arr[i];
+        } else {
+            non_primes[non_prime_count++] = arr[i];
+        }
+    }
+    sort_descending(primes, prime_count);
+    // Sort non-primes in descending order
+    sort_descending(non_primes, non_prime_count);
+    int index = 0;
+    
+    // First, add the largest prime
+    if (prime_count > 0) {
+        arr[index++] = primes[0];
+    }
+    for (int i = 0; i < non_prime_count; i++) {
+        arr[index++] = non_primes[i];
+    }
+    
+    // Finally, add the smallest prime
+    if (prime_count > 1) {
+        arr[index] = primes[prime_count - 1];
+    }
+}
+
+int main() {
+   
+    int arr2[] = {1, 6, 4, 13, 9, 3};
+    int size2 = sizeof(arr2) / sizeof(arr2[0]);
+    rearrange_array(arr2, size2);
+    printf("Rearranged array 2: ");
+    for (int i = 0; i < size2; i++) {
+        printf("%d ", arr2[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
